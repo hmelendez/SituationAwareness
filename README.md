@@ -6,7 +6,7 @@ Situation Awareness is a mobile web application that allows users to be aware of
 Built With
 -------
 
-The aplication uses:.
+The aplication uses:
 
 * [ArcGIS JavaScrip API](http://developers.arcgis.com/en/javascript/) -- Is the framework for all the geospatial functions 
 * [ArcGIS Online](http://www.arcgis.com/about/) --  Is the platform use to host the criminal incidents data and is the basemaps provider  
