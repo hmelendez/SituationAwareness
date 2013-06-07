@@ -12,13 +12,17 @@
 
 <link rel="stylesheet" href="css/CustomTheme.css" />
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7/dijit/themes/claro/claro.css">
 <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/dijit/css/Gallery.css" />
 <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" />
+
 <link rel="stylesheet" href="css/layout.css" />
 
 <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js"></script>
 <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact/"></script>
+<script>dojoConfig = {parseOnLoad: true}</script>	
+<script src='//ajax.googleapis.com/ajax/libs/dojo/1.8.0/dojo/dojo.js'></script>
 
 <script>
 dojo.require("esri.map");
@@ -39,13 +43,21 @@ var popup;
 var Geocoder;
 var INCIDENCIA_CRIMINAL_8 = "http://services1.arcgis.com/mT9bZmzYd6vYQY2T/ArcGIS/rest/services/IncidenciaCriminal/FeatureServer/8";
 var INCIDENCIA_CRIMINAL_9 = "http://services1.arcgis.com/mT9bZmzYd6vYQY2T/ArcGIS/rest/services/IncidenciaCriminal/FeatureServer/9";
-var ORIGINAL_MESSAGE = "Security Notification! Risk or danger to:\n\t the property is:{0} \n\t to the person is:{1} ";
+var ORIGINAL_MESSAGE = "Notificación de Seguridad!\nEl peligro a la:\n\tpropiedad es:{0} \n\tpersona es:{1} ";
 var resultMessage;
 var whoCalled;
 
 dojo.ready(function () {
   $(document).ready(jQueryReady);
 });
+
+//require(["dijit/Dialog", "dojo/domReady!"], function (Dialog) {
+//    myDialog = new Dialog({
+//        title: "My Dialog",
+//        content: "Test content.",
+//        style: "width: 300px"
+//    });
+//});
 
 function jQueryReady() {
   //onorientationchange doesn't always fire in a timely manner in Android so check for both orientationchange and resize
@@ -230,7 +242,7 @@ function zoomToLocation(location) {
   map.graphics.clear();
   $.mobile.hidePageLoadingMsg();
   pt = esri.geometry.geographicToWebMercator(new esri.geometry.Point(location.coords.longitude, location.coords.latitude));
-  map.centerAndZoom(pt, 13);
+  map.centerAndZoom(pt, 20);
   
   var symbol = new esri.symbol.PictureMarkerSymbol("images/bluedot.png", 40, 40);
   map.graphics.add(new esri.Graphic(pt, symbol));
@@ -290,7 +302,7 @@ function queryLayer(url) {
 }
 
 function showResults(results) {
-    s = "Unknown";
+    s = "DESCONOCIDO";
     //for (var i = 0, il = results.features.length; i < il; i++) {
     var featureAttributes = results.features[0].attributes;
 
@@ -300,10 +312,10 @@ function showResults(results) {
     //}
     //dojo.byId("info").innerHTML = s;
     switch (featureAttributes.GRIDCODE) {
-        case 1: s = " None";
-        case 2: s = " Low";
-        case 3: s = " Moderated";
-        case 4: s = " High";
+        case 1: s = " NINGUNO";
+        case 2: s = " BAJO";
+        case 3: s = " MODERADO";
+        case 4: s = " ALTO";
     }
 
     if (whoCalled == 8) {
@@ -315,6 +327,7 @@ function showResults(results) {
 
     if (resultMessage.indexOf("{0}") == -1 && resultMessage.indexOf("{1}") == -1) {
         alert(resultMessage);
+       // myDialog.show();
         resultMessage = ORIGINAL_MESSAGE;
     }
 
@@ -328,7 +341,7 @@ function showResults(results) {
 <div data-role="page" id="mapPage" class="page-map">
   <!-- Header -->
     <div data-role="header" data-theme='a' data-position="fixed">
-        <h2 id="webmapTitle">ArcGIS.com Map</h2>
+        <h2 id="webmapTitle">Incidencia Criminal</h2>
         <a href="#infoPopup" id="info" data-rel="popup" data-theme='a' class="ui-btn-right" data-icon="info" data-iconpos="notext"></a>
     </div>
 
@@ -387,16 +400,16 @@ function showResults(results) {
     <div data-role="navbar" class="customIcons">
       <ul>
         <li>
-          <a id="geolocate" data-icon="custom" href="#" onClick="getLocation();">Locate</a>
+          <a id="geolocate" data-icon="custom" href="#" onClick="getLocation();">Información Criminal</a>
         </li>
         <li>
-          <a id="legend" data-icon="custom" href="#legendPopup" data-rel="popup" data-theme="a" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-iconpos="notext">Legend</a>
+          <a id="legend" data-icon="custom" href="#legendPopup" data-rel="popup" data-theme="a" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-iconpos="notext">Leyenda</a>
         </li>
         <li>
-          <a id="details" data-icon="custom" href="#basemapGalleryPopup" data-rel="popup" data-theme="a" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-iconpos="notext">Basemap</a>
+          <a id="details" data-icon="custom" href="#basemapGalleryPopup" data-rel="popup" data-theme="a" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-iconpos="notext">Mapa Base</a>
         </li>
         <li>
-          <a id="searchMap" data-icon="custom" href="#searchDialog" data-rel="popup" data-theme="a" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-iconpos="notext">Search</a>
+          <a id="searchMap" data-icon="custom" href="#searchDialog" data-rel="popup" data-theme="a" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-iconpos="notext">Buscar</a>
         </li>
       </ul>
     </div>
